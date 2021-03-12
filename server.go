@@ -15,11 +15,11 @@ type UserServer struct {
 }
 
 func (u *UserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "api/users/"))
+	param := strings.TrimPrefix(r.URL.Path, "/api/users/")
+	id, err := strconv.Atoi(param)
 	if err != nil {
 		w.Write([]byte("Failure to Retrieve ID"))
 	} else {
 		w.Write([]byte(u.store.GetUser(id)))
 	}
 }
-
