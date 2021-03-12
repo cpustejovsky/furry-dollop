@@ -7,7 +7,25 @@ import (
 	"testing"
 )
 
+type StubUserStore struct {
+	users map[int]string
+}
+
+func (s *StubUserStore) GetUser(id int) string {
+	users := s.users[id]
+	return users
+}
+
 func TestGETUsers(t *testing.T) {
+	server := &UserServer{
+		&StubUserStore{
+			map[int]string{
+				1: "Ryan Dahl",
+				2: "Rob Pike",
+			},
+		},
+	}
+
 	t.Run("returns Ryan Dahl's sp", func(t *testing.T) {
 		tests := []struct {
 			name string
@@ -31,13 +49,11 @@ func TestGETUsers(t *testing.T) {
 				request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("api/users/%v", tt.id), nil)
 				response := httptest.NewRecorder()
 
-				UserServer(response, request)
+				server.ServeHTTP(response, request)
 
 				got := response.Body.String()
 
-				if got != tt.want {
-					t.Errorf("got %q, want %q", got, tt.want)
-				}
+				AssertEqual(t, got, tt.want)
 			})
 		}
 	})
