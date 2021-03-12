@@ -25,36 +25,34 @@ func TestGETUsers(t *testing.T) {
 			},
 		},
 	}
+	tests := []struct {
+		name string
+		id   int
+		want string
+	}{
+		{
+			"Get Ryan Dahl by Id",
+			1,
+			"Ryan Dahl",
+		},
+		{
+			"Get Rob Pike by Id",
+			2,
+			"Rob Pike",
+		},
+	}
 
-	t.Run("returns Ryan Dahl's sp", func(t *testing.T) {
-		tests := []struct {
-			name string
-			id   int
-			want string
-		}{
-			{
-				"Get Ryan Dahl by Id",
-				1,
-				"Ryan Dahl",
-			},
-			{
-				"Get Rob Pike by Id",
-				2,
-				"Rob Pike",
-			},
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/users/%v", tt.id), nil)
+			response := httptest.NewRecorder()
 
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("api/users/%v", tt.id), nil)
-				response := httptest.NewRecorder()
+			server.ServeHTTP(response, request)
 
-				server.ServeHTTP(response, request)
+			got := response.Body.String()
 
-				got := response.Body.String()
+			AssertEqual(t, got, tt.want)
+		})
+	}
 
-				AssertEqual(t, got, tt.want)
-			})
-		}
-	})
 }
