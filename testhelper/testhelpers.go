@@ -7,7 +7,15 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/google/uuid"
 )
+
+var TestUUIDString string = "af60a115-c4d1-4262-8ecb-3a36f65aa6b3"
+
+func TestUUID() uuid.UUID {
+	uuid, _ := uuid.Parse("af60a115-c4d1-4262-8ecb-3a36f65aa6b3")
+	return uuid
+}
 
 //NewMockDB creates a new sqlmock db for testing
 func NewMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
