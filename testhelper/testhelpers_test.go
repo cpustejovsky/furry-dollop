@@ -1,15 +1,35 @@
-package main
+package testhelper
 
 import (
+	"database/sql"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
 )
+
+//NewMockDB creates a new sqlmock db for testing
+func NewMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	return db, mock
+}
 
 //AssertEqual takes two interfaces and determines if they are equal
 func AssertEqual(t *testing.T, got, want interface{}) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got:\n%v\nwant\n%v\n", got, want)
+	}
+}
+
+//AssertStatus takes two status codes and compares them
+func AssertStatus(t testing.TB, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("did not get correct status, got %d, want %d", got, want)
 	}
 }
 
