@@ -2,10 +2,11 @@ package mock
 
 import (
 	"github.com/cpustejovsky/furry-dollop/models"
+	"github.com/cpustejovsky/furry-dollop/testhelper"
 )
 
 var mockUser = &models.User{
-	ID:        1,
+	ID:        testhelper.TestUUID(),
 	Name:      "Harry",
 	Email:     "harry@example.com",
 	Expertise: "Haskell",
