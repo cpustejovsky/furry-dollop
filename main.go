@@ -7,13 +7,27 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/cpustejovsky/furry-dollop/routes"
+	"github.com/cpustejovsky/furry-dollop/models"
+	"github.com/cpustejovsky/furry-dollop/models/psql"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
+var (
+	errorLog *log.Logger
+	infoLog  *log.Logger
+)
+
 type Config struct {
 	Addr string
+}
+
+type application struct {
+	errorLog *log.Logger
+	infoLog  *log.Logger
+	users    interface {
+		Get(string) (*models.User, error)
+	}
 }
 
 const (
@@ -50,11 +64,16 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Successfully connected to database!")
+
+	app := &application{
+		users: &psql.UserModel{DB: db},
+	}
+
 	server := &http.Server{
-		Handler: routes.Routes(),
-		Addr:    ":5000",
+		Handler: app.Routes(),
+		Addr:    cfg.Addr,
 	}
 	if err := server.ListenAndServe(); err != nil {
-		log.Fatalf("could not listen on port 5000 %v", err)
+		log.Fatalf("could not listen on port %s %v", cfg.Addr, err)
 	}
 }
