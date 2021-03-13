@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -27,10 +26,8 @@ func placeholderAPI(w http.ResponseWriter, r *http.Request) {
 func (app *application) getUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["userID"]
-	fmt.Println(id)
 	u, err := app.users.Get(id)
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)
 	} else {
 		w.Write([]byte(u.Name))
