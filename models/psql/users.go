@@ -21,7 +21,7 @@ func (m *UserModel) Get(id string) (*models.User, error) {
 	stmt := `
 	SELECT id, username, email, expertise 
 	FROM users 
-	WHERE account_id = $1`
+	WHERE id = $1`
 	err = m.DB.QueryRow(stmt, uuid).Scan(&u.ID, &u.Name, &u.Email, &u.Expertise)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
