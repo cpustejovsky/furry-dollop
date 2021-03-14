@@ -6,19 +6,20 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/cpustejovsky/furry-dollop/models"
 	"github.com/cpustejovsky/furry-dollop/models/psql"
 	"github.com/cpustejovsky/furry-dollop/testhelper"
 )
 
-func TestUserModelGet(t *testing.T) {
-	var testUser = models.User{
-		ID:        testhelper.TestUUID(),
-		Name:      "Harry Haskell",
-		Email:     "harry@example.com",
-		Expertise: "Haskell",
-	}
+var testUser = models.User{
+	ID:        testhelper.TestUUID(),
+	Name:      "Harry Haskell",
+	Email:     "harry@example.com",
+	Expertise: "Haskell",
+}
 
+func TestUserModelGet(t *testing.T) {
 	tests := []struct {
 		name      string
 		userID    string
@@ -49,7 +50,7 @@ func TestUserModelGet(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			db, mock := testhelper.NewMockDB(t)
 			rows := mock.NewRows([]string{"id", "username", "email", "expertise"}).AddRow(testUser.ID, testUser.Name, testUser.Email, testUser.Expertise)
-			mock.ExpectQuery(regexp.QuoteMeta("SELECT id, username, email, expertise FROM users WHERE account_id = $1")).WithArgs(testhelper.TestUUID()).WillReturnRows(rows)
+			mock.ExpectQuery(regexp.QuoteMeta("SELECT id, username, email, expertise FROM users WHERE id = $1")).WithArgs(testhelper.TestUUID()).WillReturnRows(rows)
 
 			m := psql.UserModel{db}
 
@@ -66,4 +67,17 @@ func TestUserModelGet(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestUserModelInsert(t *testing.T) {
+	db, mock := testhelper.NewMockDB(t)
+	mock.ExpectExec(regexp.QuoteMeta("INSERT INTO users (id, username, email, expertise) VALUES ('Charles', 'charles.pustejovsky@gmail.com', 'Go')")).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	m := psql.UserModel{db}
+
+	err := m.Insert()
+	if err != nil {
+		t.Errorf("expected nil, instead got following error:\n%v", err)
+	}
+
 }
