@@ -33,3 +33,16 @@ func (m *PostModel) Get(id string) (*models.Post, error) {
 
 	return p, nil
 }
+
+func (m *PostModel) Insert(userid, title, body string) error {
+	stmt := `
+	INSERT INTO posts (id, title, body) 
+	VALUES($1, $2, $3)`
+
+	_, err := m.DB.Exec(stmt, userid, title, body)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/cpustejovsky/furry-dollop/models"
 	"github.com/cpustejovsky/furry-dollop/models/psql"
 
@@ -35,4 +36,18 @@ func TestPostModelGet(t *testing.T) {
 		t.Errorf("want:\n%v\ngot:\n%v\n", &testPost, user)
 	}
 
+}
+
+func TestPostModelInsert(t *testing.T) {
+	db, mock := testhelper.NewMockDB(t)
+	mock.ExpectExec(regexp.QuoteMeta("INSERT INTO posts (id, title, body)")).
+		WithArgs(testPost.UserId, testPost.Title, testPost.Body).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+	m := psql.PostModel{db}
+
+	err := m.Insert(testhelper.TestUserUUIDString, testPost.Title, testPost.Body)
+	if err != nil {
+		t.Errorf("expected nil, instead got following error:\n%v", err)
+	}
 }
