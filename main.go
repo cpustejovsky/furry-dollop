@@ -37,6 +37,8 @@ type application struct {
 		GetAll() (*[]models.Post, error)
 		GetById(string) (*models.Post, error)
 		GetByUserId(string) (*[]models.Post, error)
+		Update(string, string, string) (*models.Post, error)
+		Delete(string) error
 	}
 }
 

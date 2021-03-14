@@ -163,3 +163,41 @@ func (app *application) GetPostsByUserId(w http.ResponseWriter, r *http.Request)
 	}
 	w.Write(b)
 }
+
+func (app *application) UpdatePost(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["postID"]
+	decoder := json.NewDecoder(r.Body)
+	var post struct{
+		Title string
+		Body string
+	}
+	err := decoder.Decode(&post)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with updating post."))
+		app.errorLog.Println(err)
+	}
+	u, err := app.posts.Update(id, post.Title, post.Body)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with updating post."))
+		app.errorLog.Println(err)
+	}
+	b, err := json.Marshal(u)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with showing updated post."))
+		app.errorLog.Println(err)
+	}
+	w.Write(b)
+}
+
+func (app *application) DeletePost(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["postID"]
+	err := app.posts.Delete(id)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with deleting post."))
+		app.errorLog.Println(err)
+		return
+	}
+	w.Write([]byte("Post deleted"))
+}
