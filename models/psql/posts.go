@@ -74,3 +74,38 @@ func (m *PostModel) GetById(id string) (*models.Post, error) {
 	}
 	return p, nil
 }
+
+func (m *PostModel) GetByUserId(id string) (*[]models.Post, error) {
+	var posts []models.Post
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		return nil, models.ErrInvalidID
+	}
+	stmt := `
+	SELECT post_id, id, title, body 
+	FROM posts 
+	WHERE id = $1`
+	rows, err := m.DB.Query(stmt, uuid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		p := &models.Post{}
+		err = rows.Scan(&p.ID, &p.Title, &p.Body, &p.UserId)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, *p)
+	}
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+
+	return &posts, nil
+
+}

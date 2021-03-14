@@ -33,25 +33,6 @@ func TestPostModelInsert(t *testing.T) {
 	}
 }
 
-func TestPostModelGetByID(t *testing.T) {
-	db, mock := testhelper.NewMockDB(t)
-	rows := mock.NewRows([]string{"post_id", "title", "body", "id"}).AddRow(testPost.ID, testPost.Title, testPost.Body, testPost.UserId)
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT post_id, id, title, body FROM posts WHERE post_id = $1")).WithArgs(testhelper.TestPostUUID()).WillReturnRows(rows)
-
-	m := psql.PostModel{db}
-
-	user, err := m.GetById(testhelper.TestPostUUIDString)
-
-	if err != nil {
-		t.Errorf("expected nil, instead got following error:\n%v", err)
-	}
-
-	if !reflect.DeepEqual(user, &testPost) {
-		t.Errorf("want:\n%v\ngot:\n%v\n", &testPost, user)
-	}
-
-}
-
 func TestPostModelGetAll(t *testing.T) {
 	db, mock := testhelper.NewMockDB(t)
 	rows := mock.NewRows([]string{"post_id", "title", "body", "id"}).AddRow(testPost.ID, testPost.Title, testPost.Body, testPost.UserId)
@@ -67,6 +48,44 @@ func TestPostModelGetAll(t *testing.T) {
 
 	if !reflect.DeepEqual(posts, &[]models.Post{testPost}) {
 		t.Errorf("want:\n%v\ngot:\n%v\n", &testPost, posts)
+	}
+
+}
+
+func TestPostModelGetByID(t *testing.T) {
+	db, mock := testhelper.NewMockDB(t)
+	rows := mock.NewRows([]string{"post_id", "title", "body", "id"}).AddRow(testPost.ID, testPost.Title, testPost.Body, testPost.UserId)
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT post_id, id, title, body FROM posts WHERE post_id = $1")).WithArgs(testhelper.TestPostUUID()).WillReturnRows(rows)
+
+	m := psql.PostModel{db}
+
+	post, err := m.GetById(testhelper.TestPostUUIDString)
+
+	if err != nil {
+		t.Errorf("expected nil, instead got following error:\n%v", err)
+	}
+
+	if !reflect.DeepEqual(post, &testPost) {
+		t.Errorf("want:\n%v\ngot:\n%v\n", &testPost, post)
+	}
+
+}
+
+func TestPostModelGetByUserID(t *testing.T) {
+	db, mock := testhelper.NewMockDB(t)
+	rows := mock.NewRows([]string{"post_id", "title", "body", "id"}).AddRow(testPost.ID, testPost.Title, testPost.Body, testPost.UserId)
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT post_id, id, title, body FROM posts WHERE id = $1")).WithArgs(testhelper.TestUserUUID()).WillReturnRows(rows)
+
+	m := psql.PostModel{db}
+
+	posts, err := m.GetByUserId(testhelper.TestUserUUIDString)
+
+	if err != nil {
+		t.Errorf("expected nil, instead got following error:\n%v", err)
+	}
+
+	if !reflect.DeepEqual(posts, &[]models.Post{testPost}) {
+		t.Errorf("want:\n%v\ngot:\n%v\n", &[]models.Post{testPost}, posts)
 	}
 
 }
