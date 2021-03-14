@@ -15,13 +15,13 @@ func (app *application) Routes() *mux.Router {
 	u.HandleFunc("/new", app.AddUser).Methods("POST")
 	u.HandleFunc("/{userID}", app.UpdateUser).Methods("PATCH")
 	u.HandleFunc("/{userID}", app.DeleteUser).Methods("DELETE")
-	// n := s.PathPrefix("/notes").Subrouter()
-	// n.HandleFunc("/", app.GetNotes).Methods("GET")
-	// n.HandleFunc("/{noteID}", app.GetNoteById).Methods("GET")
-	// n.HandleFunc("/{noteID}/{userID", app.GetNotesByUserId).Methods("GET")
-	// n.HandleFunc("/new", app.AddNote).Methods("POST")
-	// n.HandleFunc("/{noteID}", app.UpdateNote).Methods("PATCH")
-	// n.HandleFunc("/{noteID}", app.DeleteNote).Methods("DELETE")
+	// p := s.PathPrefix("/posts").Subrouter()
+	// p.HandleFunc("/", app.GetPosts).Methods("GET")
+	// p.HandleFunc("/{postID}", app.GetPostById).Methods("GET")
+	// p.HandleFunc("/{postID}/{userID", app.GetPostsByUserId).Methods("GET")
+	// p.HandleFunc("/new", app.AddPost).Methods("POST")
+	// p.HandleFunc("/{postID}", app.UpdatePost).Methods("PATCH")
+	// p.HandleFunc("/{postID}", app.DeletePost).Methods("DELETE")
 	return r
 }
 
