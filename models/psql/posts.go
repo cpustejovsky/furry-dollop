@@ -64,7 +64,7 @@ func (m *PostModel) GetById(id string) (*models.Post, error) {
 	SELECT post_id, id, title, body 
 	FROM posts 
 	WHERE post_id = $1`
-	err = m.DB.QueryRow(stmt, uuid).Scan(&p.ID, &p.UserId, &p.Title, &p.Body)
+	err = m.DB.QueryRow(stmt, uuid).Scan(&p.ID, &p.Title, &p.Body, &p.UserId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
