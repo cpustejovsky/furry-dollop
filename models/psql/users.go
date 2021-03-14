@@ -40,7 +40,7 @@ func (m *UserModel) Insert(name, email, expertise string) error {
 	stmt := `
 	INSERT INTO users (username, email, expertise) 
 	VALUES($1, $2, $3)`
-	
+
 	_, err := m.DB.Exec(stmt, name, email, expertise)
 	if err != nil {
 		var postgresError *pq.Error
@@ -53,4 +53,38 @@ func (m *UserModel) Insert(name, email, expertise string) error {
 	}
 
 	return nil
+}
+
+func (m *UserModel) Update(id, name, email, expertise string) (*models.User, error) {
+	u := &models.User{}
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		return nil, err
+	}
+	stmt := `
+	UPDATE users
+	SET name = $2, email = $3, expertise = $4
+	WHERE account_id = $1`
+	_, err = m.DB.Exec(stmt, uuid, name, email, expertise)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+	stmt = `
+	SELECT id, username, email, expertise 
+	FROM users 
+	WHERE id = $1`
+	err = m.DB.QueryRow(stmt, uuid).Scan(&u.ID, &u.Name, &u.Email, &u.Expertise)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+
+	return u, nil
 }

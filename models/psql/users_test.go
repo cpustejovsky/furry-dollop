@@ -83,3 +83,24 @@ func TestUserModelInsert(t *testing.T) {
 	}
 
 }
+
+func TestUserModelUpdate(t *testing.T) {
+	db, mock := testhelper.NewMockDB(t)
+	rows := mock.NewRows([]string{"id", "username", "email", "expertise"}).AddRow(testUser.ID, testUser.Name, testUser.Email, testUser.Expertise)
+	mock.ExpectExec(regexp.QuoteMeta("UPDATE users")).
+		WithArgs(testUser.ID, testUser.Name, testUser.Email, testUser.Expertise).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT id, username, email, expertise FROM users WHERE id = $1")).
+		WithArgs(testhelper.TestUUID()).
+		WillReturnRows(rows)
+	m := psql.UserModel{db}
+
+	user, err := m.Update(testhelper.TestUUIDString, testUser.Name, testUser.Email, testUser.Expertise)
+	if err != nil {
+		t.Errorf("expected nil, instead got following error:\n%v", err)
+	}
+
+	if !reflect.DeepEqual(user, &testUser) {
+		t.Errorf("want %v; got %v", testUser, user)
+	}
+}
