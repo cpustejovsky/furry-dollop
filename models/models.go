@@ -15,9 +15,9 @@ var (
 
 type Post struct {
 	ID     uuid.UUID
-	UserId uuid.UUID
 	Title  string
 	Body   string
+	UserId uuid.UUID
 }
 
 type User struct {

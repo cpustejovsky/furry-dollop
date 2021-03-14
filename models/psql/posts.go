@@ -61,7 +61,7 @@ func (m *PostModel) GetById(id string) (*models.Post, error) {
 		return nil, models.ErrInvalidID
 	}
 	stmt := `
-	SELECT post_id, id, title, body 
+	SELECT post_id, title, body, id
 	FROM posts 
 	WHERE post_id = $1`
 	err = m.DB.QueryRow(stmt, uuid).Scan(&p.ID, &p.Title, &p.Body, &p.UserId)
@@ -82,7 +82,7 @@ func (m *PostModel) GetByUserId(id string) (*[]models.Post, error) {
 		return nil, models.ErrInvalidID
 	}
 	stmt := `
-	SELECT post_id, id, title, body 
+	SELECT post_id, title, body, id 
 	FROM posts 
 	WHERE id = $1`
 	rows, err := m.DB.Query(stmt, uuid)

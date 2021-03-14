@@ -34,8 +34,9 @@ type application struct {
 	}
 	posts interface {
 		Insert(string, string, string) error
-		GetById(string) (*models.Post, error)
 		GetAll() (*[]models.Post, error)
+		GetById(string) (*models.Post, error)
+		GetByUserId(string) (*[]models.Post, error)
 	}
 }
 

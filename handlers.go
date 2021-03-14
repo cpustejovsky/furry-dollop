@@ -115,6 +115,21 @@ func (app *application) AddPost(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Post added!"))
 }
 
+func (app *application) GetPosts(w http.ResponseWriter, r *http.Request) {
+	n, err := app.posts.GetAll()
+	if err != nil {
+		app.errorLog.Println(err)
+		w.Write([]byte("Something has gone wrong with fetching posts."))
+		return
+	}
+	b, err := json.Marshal(n)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with fetching posts."))
+		app.errorLog.Println(err)
+	}
+	w.Write(b)
+}
+
 func (app *application) GetPostsById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["postID"]
@@ -132,17 +147,19 @@ func (app *application) GetPostsById(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func (app *application) GetPosts(w http.ResponseWriter, r *http.Request) {
-	n, err := app.posts.GetAll()
+func (app *application) GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["userID"]
+	n, err := app.posts.GetByUserId(id)
 	if err != nil {
 		app.errorLog.Println(err)
-		w.Write([]byte("Something has gone wrong with fetching posts."))
+		w.Write([]byte("Something has gone wrong with fetching posts by user."))
 		return
 	}
 	b, err := json.Marshal(n)
 	if err != nil {
-		w.Write([]byte("Something has gone wrong with fetching posts."))
 		app.errorLog.Println(err)
+		w.Write([]byte("Something has gone wrong with formatting posts by user."))
 	}
 	w.Write(b)
 }

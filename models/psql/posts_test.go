@@ -55,7 +55,7 @@ func TestPostModelGetAll(t *testing.T) {
 func TestPostModelGetByID(t *testing.T) {
 	db, mock := testhelper.NewMockDB(t)
 	rows := mock.NewRows([]string{"post_id", "title", "body", "id"}).AddRow(testPost.ID, testPost.Title, testPost.Body, testPost.UserId)
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT post_id, id, title, body FROM posts WHERE post_id = $1")).WithArgs(testhelper.TestPostUUID()).WillReturnRows(rows)
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT post_id, title, body, id FROM posts WHERE post_id = $1")).WithArgs(testhelper.TestPostUUID()).WillReturnRows(rows)
 
 	m := psql.PostModel{db}
 
@@ -74,7 +74,7 @@ func TestPostModelGetByID(t *testing.T) {
 func TestPostModelGetByUserID(t *testing.T) {
 	db, mock := testhelper.NewMockDB(t)
 	rows := mock.NewRows([]string{"post_id", "title", "body", "id"}).AddRow(testPost.ID, testPost.Title, testPost.Body, testPost.UserId)
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT post_id, id, title, body FROM posts WHERE id = $1")).WithArgs(testhelper.TestUserUUID()).WillReturnRows(rows)
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT post_id, title, body, id FROM posts WHERE id = $1")).WithArgs(testhelper.TestUserUUID()).WillReturnRows(rows)
 
 	m := psql.PostModel{db}
 

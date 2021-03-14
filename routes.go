@@ -17,9 +17,9 @@ func (app *application) Routes() *mux.Router {
 	u.HandleFunc("/{userID}", app.DeleteUser).Methods("DELETE")
 	p := s.PathPrefix("/posts").Subrouter()
 	p.HandleFunc("/new", app.AddPost).Methods("POST")
-	p.HandleFunc("/{postID}", app.GetPostsById).Methods("GET")
 	p.HandleFunc("/", app.GetPosts).Methods("GET")
-	// p.HandleFunc("/{postID}/{userID", app.GetPostsByUserId).Methods("GET")
+	p.HandleFunc("/{postID}", app.GetPostsById).Methods("GET")
+	p.HandleFunc("/user/{userID}", app.GetPostsByUserId).Methods("GET")
 	// p.HandleFunc("/{postID}", app.UpdatePost).Methods("PATCH")
 	// p.HandleFunc("/{postID}", app.DeletePost).Methods("DELETE")
 	return r
