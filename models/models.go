@@ -21,8 +21,9 @@ type Post struct {
 }
 
 type User struct {
-	ID        uuid.UUID
-	Name      string
-	Email     string
-	Expertise string
+	ID             uuid.UUID
+	Name           string
+	Email          string
+	Expertise      string
+	HashedPassword []byte
 }
