@@ -25,21 +25,20 @@ func (app *application) GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-type FormUser struct {
-	Name      string
-	Email     string
-	Expertise string
-}
-
 func (app *application) AddUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var user FormUser
+	var user struct {
+		Name      string
+		Email     string
+		Expertise string
+		Password  string
+	}
 	err := decoder.Decode(&user)
 	if err != nil {
 		w.Write([]byte("Something has gone wrong with adding user."))
 		app.errorLog.Println(err)
 	}
-	err = app.users.Insert(user.Name, user.Email, user.Expertise)
+	err = app.users.Insert(user.Name, user.Email, user.Expertise, user.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			w.Write([]byte("email address is already in use"))
@@ -58,7 +57,11 @@ func (app *application) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["userID"]
 	decoder := json.NewDecoder(r.Body)
-	var user FormUser
+	var user struct {
+		Name      string
+		Email     string
+		Expertise string
+	}
 	err := decoder.Decode(&user)
 	if err != nil {
 		w.Write([]byte("Something has gone wrong with updating user."))
@@ -168,9 +171,9 @@ func (app *application) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["postID"]
 	decoder := json.NewDecoder(r.Body)
-	var post struct{
+	var post struct {
 		Title string
-		Body string
+		Body  string
 	}
 	err := decoder.Decode(&post)
 	if err != nil {
