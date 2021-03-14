@@ -104,3 +104,16 @@ func TestUserModelUpdate(t *testing.T) {
 		t.Errorf("want %v; got %v", testUser, user)
 	}
 }
+
+func TestUserModelDelete(t *testing.T) {
+	db, mock := testhelper.NewMockDB(t)
+	mock.ExpectExec(regexp.QuoteMeta("DELETE FROM users WHERE id = $1")).
+		WithArgs(testhelper.TestUUID()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	m := psql.UserModel{db}
+
+	err := m.Delete(testhelper.TestUUIDString)
+	if err != nil {
+		t.Errorf("expected nil, instead got following error:\n%v", err)
+	}
+}
