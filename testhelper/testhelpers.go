@@ -10,10 +10,17 @@ import (
 	"github.com/google/uuid"
 )
 
-var TestUUIDString string = "af60a115-c4d1-4262-8ecb-3a36f65aa6b3"
+var TestUserUUIDString string = "af60a115-c4d1-4262-8ecb-3a36f65aa6b3"
 
-func TestUUID() uuid.UUID {
+func TestUserUUID() uuid.UUID {
 	uuid, _ := uuid.Parse("af60a115-c4d1-4262-8ecb-3a36f65aa6b3")
+	return uuid
+}
+
+var TestPostUUIDString string = "f630fe58-ca59-4179-a3e1-9aaa08ea0f97"
+
+func TestPostUUID() uuid.UUID {
+	uuid, _ := uuid.Parse("f630fe58-ca59-4179-a3e1-9aaa08ea0f97")
 	return uuid
 }
 

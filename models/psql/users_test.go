@@ -13,7 +13,7 @@ import (
 )
 
 var testUser = models.User{
-	ID:        testhelper.TestUUID(),
+	ID:        testhelper.TestUserUUID(),
 	Name:      "Harry Haskell",
 	Email:     "harry@example.com",
 	Expertise: "Haskell",
@@ -28,7 +28,7 @@ func TestUserModelGet(t *testing.T) {
 	}{
 		{
 			name:      "Valid ID",
-			userID:    testhelper.TestUUIDString,
+			userID:    testhelper.TestUserUUIDString,
 			wantUser:  &testUser,
 			wantError: nil,
 		},
@@ -50,7 +50,7 @@ func TestUserModelGet(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			db, mock := testhelper.NewMockDB(t)
 			rows := mock.NewRows([]string{"id", "username", "email", "expertise"}).AddRow(testUser.ID, testUser.Name, testUser.Email, testUser.Expertise)
-			mock.ExpectQuery(regexp.QuoteMeta("SELECT id, username, email, expertise FROM users WHERE id = $1")).WithArgs(testhelper.TestUUID()).WillReturnRows(rows)
+			mock.ExpectQuery(regexp.QuoteMeta("SELECT id, username, email, expertise FROM users WHERE id = $1")).WithArgs(testhelper.TestUserUUID()).WillReturnRows(rows)
 
 			m := psql.UserModel{db}
 
@@ -91,11 +91,11 @@ func TestUserModelUpdate(t *testing.T) {
 		WithArgs(testUser.ID, testUser.Name, testUser.Email, testUser.Expertise).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT id, username, email, expertise FROM users WHERE id = $1")).
-		WithArgs(testhelper.TestUUID()).
+		WithArgs(testhelper.TestUserUUID()).
 		WillReturnRows(rows)
 	m := psql.UserModel{db}
 
-	user, err := m.Update(testhelper.TestUUIDString, testUser.Name, testUser.Email, testUser.Expertise)
+	user, err := m.Update(testhelper.TestUserUUIDString, testUser.Name, testUser.Email, testUser.Expertise)
 	if err != nil {
 		t.Errorf("expected nil, instead got following error:\n%v", err)
 	}
@@ -108,11 +108,11 @@ func TestUserModelUpdate(t *testing.T) {
 func TestUserModelDelete(t *testing.T) {
 	db, mock := testhelper.NewMockDB(t)
 	mock.ExpectExec(regexp.QuoteMeta("DELETE FROM users WHERE id = $1")).
-		WithArgs(testhelper.TestUUID()).
+		WithArgs(testhelper.TestUserUUID()).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	m := psql.UserModel{db}
 
-	err := m.Delete(testhelper.TestUUIDString)
+	err := m.Delete(testhelper.TestUserUUIDString)
 	if err != nil {
 		t.Errorf("expected nil, instead got following error:\n%v", err)
 	}
