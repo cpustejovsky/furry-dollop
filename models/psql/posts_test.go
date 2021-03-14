@@ -110,3 +110,16 @@ func TestPostModelUpdate(t *testing.T) {
 		t.Errorf("want %v; got %v", testUser, post)
 	}
 }
+
+func TestPostModelDelete(t *testing.T) {
+	db, mock := testhelper.NewMockDB(t)
+	mock.ExpectExec(regexp.QuoteMeta("DELETE FROM posts WHERE post_id = $1")).
+		WithArgs(testhelper.TestPostUUID()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	m := psql.PostModel{db}
+
+	err := m.Delete(testhelper.TestPostUUIDString)
+	if err != nil {
+		t.Errorf("expected nil, instead got following error:\n%v", err)
+	}
+}

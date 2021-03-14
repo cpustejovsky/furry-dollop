@@ -143,3 +143,18 @@ func (m *PostModel) Update(id, title, body string) (*models.Post, error) {
 
 	return p, nil
 }
+
+func (m *PostModel) Delete(id string) error {
+	sqlStatement := `
+	DELETE FROM posts
+	WHERE post_id = $1`
+	_, err := m.DB.Exec(sqlStatement, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.ErrNoRecord
+		} else {
+			return err
+		}
+	}
+	return nil
+}
