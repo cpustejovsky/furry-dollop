@@ -10,10 +10,18 @@ func (app *application) Routes() *mux.Router {
 	r := mux.NewRouter()
 	s := r.PathPrefix("/api").Subrouter()
 	s.HandleFunc("/", helloWorld)
-	s.HandleFunc("/user/{userID}", app.GetUser).Methods("GET")
-	s.HandleFunc("/user/new", app.AddUser).Methods("POST")
-	s.HandleFunc("/user/{userID}", app.UpdateUser).Methods("PATCH")
-	s.HandleFunc("/user/{userID}", app.DeleteUser).Methods("DELETE")
+	u := s.PathPrefix("/users").Subrouter()
+	u.HandleFunc("/{userID}", app.GetUser).Methods("GET")
+	u.HandleFunc("/new", app.AddUser).Methods("POST")
+	u.HandleFunc("/{userID}", app.UpdateUser).Methods("PATCH")
+	u.HandleFunc("/{userID}", app.DeleteUser).Methods("DELETE")
+	// n := s.PathPrefix("/notes").Subrouter()
+	// n.HandleFunc("/", app.GetNotes).Methods("GET")
+	// n.HandleFunc("/{noteID}", app.GetNoteById).Methods("GET")
+	// n.HandleFunc("/{noteID}/{userID", app.GetNotesByUserId).Methods("GET")
+	// n.HandleFunc("/new", app.AddNote).Methods("POST")
+	// n.HandleFunc("/{noteID}", app.UpdateNote).Methods("PATCH")
+	// n.HandleFunc("/{noteID}", app.DeleteNote).Methods("DELETE")
 	return r
 }
 
