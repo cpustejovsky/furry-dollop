@@ -25,12 +25,11 @@ func (m *PostModel) Insert(userid, title, body string) error {
 	return nil
 }
 
-func (m *PostModel) Get() (*[]models.Post, error) {
+func (m *PostModel) GetAll() (*[]models.Post, error) {
 	var posts []models.Post
 	stmt := `
 	SELECT *
-	FROM posts
-	`
+	FROM posts`
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
 		return nil, err
@@ -38,7 +37,7 @@ func (m *PostModel) Get() (*[]models.Post, error) {
 	defer rows.Close()
 	for rows.Next() {
 		p := &models.Post{}
-		err = rows.Scan(&p.ID, &p.UserId, &p.Title, &p.Body)
+		err = rows.Scan(&p.ID, &p.Title, &p.Body, &p.UserId)
 		if err != nil {
 			return nil, err
 		}

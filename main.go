@@ -33,8 +33,9 @@ type application struct {
 		Delete(string) error
 	}
 	posts interface {
-		GetById(string) (*models.Post, error)
 		Insert(string, string, string) error
+		GetById(string) (*models.Post, error)
+		GetAll() (*[]models.Post, error)
 	}
 }
 

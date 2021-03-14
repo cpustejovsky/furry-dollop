@@ -91,23 +91,6 @@ func (app *application) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 //NOTE ROUTES
 
-func (app *application) GetPostsById(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["postID"]
-	n, err := app.posts.GetById(id)
-	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Something has gone wrong with fetching post."))
-		return
-	}
-	b, err := json.Marshal(n)
-	if err != nil {
-		w.Write([]byte("Something has gone wrong with fetching post."))
-		app.errorLog.Println(err)
-	}
-	w.Write(b)
-}
-
 type FormPost struct {
 	UserID string
 	Title  string
@@ -130,4 +113,36 @@ func (app *application) AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write([]byte("Post added!"))
+}
+
+func (app *application) GetPostsById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["postID"]
+	n, err := app.posts.GetById(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Something has gone wrong with fetching post."))
+		return
+	}
+	b, err := json.Marshal(n)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with fetching post."))
+		app.errorLog.Println(err)
+	}
+	w.Write(b)
+}
+
+func (app *application) GetPosts(w http.ResponseWriter, r *http.Request) {
+	n, err := app.posts.GetAll()
+	if err != nil {
+		app.errorLog.Println(err)
+		w.Write([]byte("Something has gone wrong with fetching posts."))
+		return
+	}
+	b, err := json.Marshal(n)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with fetching posts."))
+		app.errorLog.Println(err)
+	}
+	w.Write(b)
 }

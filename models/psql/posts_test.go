@@ -59,7 +59,7 @@ func TestPostModelGetAll(t *testing.T) {
 
 	m := psql.PostModel{db}
 
-	posts, err := m.Get()
+	posts, err := m.GetAll()
 
 	if err != nil {
 		t.Errorf("expected nil, instead got following error:\n%v", err)
