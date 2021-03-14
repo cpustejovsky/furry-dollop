@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"net/http"
 
+	"github.com/cpustejovsky/furry-dollop/models"
 	"github.com/gorilla/mux"
 )
 
@@ -11,7 +14,8 @@ func (app *application) Routes() *mux.Router {
 	r.HandleFunc("/", placeholder)
 	s := r.PathPrefix("/api").Subrouter()
 	s.HandleFunc("/", placeholderAPI)
-	s.HandleFunc("/user/{userID}", app.getUser).Methods("GET")
+	s.HandleFunc("/user/{userID}", app.GetUser).Methods("GET")
+	s.HandleFunc("/user/new", app.AddUser).Methods("POST")
 	return r
 }
 
@@ -23,7 +27,7 @@ func placeholderAPI(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello from the API"))
 }
 
-func (app *application) getUser(w http.ResponseWriter, r *http.Request) {
+func (app *application) GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["userID"]
 	u, err := app.users.Get(id)
@@ -32,4 +36,33 @@ func (app *application) getUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Write([]byte(u.Name))
 	}
+}
+
+type FormUser struct {
+	Name      string
+	Email     string
+	Expertise string
+}
+
+func (app *application) AddUser(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var user FormUser
+	err := decoder.Decode(&user)
+	if err != nil {
+		w.Write([]byte("We're sorry, something has gone wrong with signing up your user."))
+		app.errorLog.Println(err)
+	}
+	err = app.users.Insert(user.Name, user.Email, user.Expertise)
+	if err != nil {
+		if errors.Is(err, models.ErrDuplicateEmail) {
+			w.Write([]byte("email address is already in use"))
+			app.errorLog.Println(err)
+
+		} else {
+			w.Write([]byte("We're sorry, something has gone wrong with signing up your user."))
+			app.errorLog.Println(err)
+		}
+		return
+	}
+	w.Write([]byte("User added!"))
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/cpustejovsky/furry-dollop/models"
 	"github.com/cpustejovsky/furry-dollop/models/psql"
@@ -27,6 +28,7 @@ type application struct {
 	infoLog  *log.Logger
 	users    interface {
 		Get(string) (*models.User, error)
+		Insert(string, string, string) error
 	}
 }
 
@@ -42,6 +44,9 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Print("No .env file found")
 	}
+
+	errorLog = log.New(os.Stderr, "ERROR\t", log.Ldate|log.LUTC|log.Llongfile)
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.LUTC)
 }
 
 func main() {
@@ -63,7 +68,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Successfully connected to database!")
+	infoLog.Println("Successfully connected to database!")
 
 	app := &application{
 		users: &psql.UserModel{DB: db},
@@ -73,7 +78,8 @@ func main() {
 		Handler: app.Routes(),
 		Addr:    cfg.Addr,
 	}
+	infoLog.Printf("starting server on port %s", cfg.Addr)
 	if err := server.ListenAndServe(); err != nil {
-		log.Fatalf("could not listen on port %s %v", cfg.Addr, err)
+		errorLog.Fatalf("could not listen on port %s\n%v", cfg.Addr, err)
 	}
 }
