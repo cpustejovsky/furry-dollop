@@ -71,11 +71,13 @@ func TestUserModelGet(t *testing.T) {
 
 func TestUserModelInsert(t *testing.T) {
 	db, mock := testhelper.NewMockDB(t)
-	mock.ExpectExec(regexp.QuoteMeta("INSERT INTO users (id, username, email, expertise) VALUES ('Charles', 'charles.pustejovsky@gmail.com', 'Go')")).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec(regexp.QuoteMeta("INSERT INTO users (username, email, expertise)")).
+		WithArgs(testUser.Name, testUser.Email, testUser.Expertise).
+		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	m := psql.UserModel{db}
 
-	err := m.Insert()
+	err := m.Insert(testUser.Name, testUser.Email, testUser.Expertise)
 	if err != nil {
 		t.Errorf("expected nil, instead got following error:\n%v", err)
 	}

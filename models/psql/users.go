@@ -3,9 +3,11 @@ package psql
 import (
 	"database/sql"
 	"errors"
+	"strings"
 
 	"github.com/cpustejovsky/furry-dollop/models"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type UserModel struct {
@@ -32,4 +34,23 @@ func (m *UserModel) Get(id string) (*models.User, error) {
 	}
 
 	return u, nil
+}
+
+func (m *UserModel) Insert(name, email, expertise string) error {
+	stmt := `
+	INSERT INTO users (username, email, expertise) 
+	VALUES($1, $2, $3)`
+	
+	_, err := m.DB.Exec(stmt, name, email, expertise)
+	if err != nil {
+		var postgresError *pq.Error
+		if errors.As(err, &postgresError) {
+			if strings.EqualFold(string(postgresError.Code), "23505") {
+				return models.ErrDuplicateEmail
+			}
+		}
+		return err
+	}
+
+	return nil
 }
