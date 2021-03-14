@@ -13,6 +13,14 @@ import (
 )
 
 var testUser = models.User{
+	ID:             testhelper.TestUserUUID(),
+	Name:           "Harry Haskell",
+	Email:          "harry@example.com",
+	Expertise:      "Haskell",
+	HashedPassword: testhelper.TestPassword(),
+}
+
+var testReturnUser = models.User{
 	ID:        testhelper.TestUserUUID(),
 	Name:      "Harry Haskell",
 	Email:     "harry@example.com",
@@ -29,7 +37,7 @@ func TestUserModelGet(t *testing.T) {
 		{
 			name:      "Valid ID",
 			userID:    testhelper.TestUserUUIDString,
-			wantUser:  &testUser,
+			wantUser:  &testReturnUser,
 			wantError: nil,
 		},
 		{
@@ -71,13 +79,12 @@ func TestUserModelGet(t *testing.T) {
 
 func TestUserModelInsert(t *testing.T) {
 	db, mock := testhelper.NewMockDB(t)
-	mock.ExpectExec(regexp.QuoteMeta("INSERT INTO users (username, email, expertise)")).
-		WithArgs(testUser.Name, testUser.Email, testUser.Expertise).
+	mock.ExpectExec(regexp.QuoteMeta("INSERT INTO users (username, email, expertise, hashed_password) VALUES($1, $2, $3, $4)")).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	m := psql.UserModel{db}
 
-	err := m.Insert(testUser.Name, testUser.Email, testUser.Expertise)
+	err := m.Insert(testUser.Name, testUser.Email, testUser.Expertise, testhelper.TestPasswordString)
 	if err != nil {
 		t.Errorf("expected nil, instead got following error:\n%v", err)
 	}
@@ -100,8 +107,8 @@ func TestUserModelUpdate(t *testing.T) {
 		t.Errorf("expected nil, instead got following error:\n%v", err)
 	}
 
-	if !reflect.DeepEqual(user, &testUser) {
-		t.Errorf("want %v; got %v", testUser, user)
+	if !reflect.DeepEqual(user, &testReturnUser) {
+		t.Errorf("want %v; got %v", testReturnUser, user)
 	}
 }
 
