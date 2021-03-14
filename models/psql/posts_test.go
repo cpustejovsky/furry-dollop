@@ -89,3 +89,24 @@ func TestPostModelGetByUserID(t *testing.T) {
 	}
 
 }
+
+func TestPostModelUpdate(t *testing.T) {
+	db, mock := testhelper.NewMockDB(t)
+	rows := mock.NewRows([]string{"post_id", "title", "body", "id"}).AddRow(testPost.ID, testPost.Title, testPost.Body, testPost.UserId)
+	mock.ExpectExec(regexp.QuoteMeta("UPDATE posts")).
+		WithArgs(testhelper.TestPostUUIDString, testPost.Title, testPost.Body).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT post_id, title, body, id FROM posts WHERE post_id = $1")).
+		WithArgs(testhelper.TestPostUUID()).
+		WillReturnRows(rows)
+	m := psql.PostModel{db}
+
+	post, err := m.Update(testhelper.TestPostUUIDString, testPost.Title, testPost.Body)
+	if err != nil {
+		t.Errorf("expected nil, instead got following error:\n%v", err)
+	}
+
+	if !reflect.DeepEqual(post, &testPost) {
+		t.Errorf("want %v; got %v", testUser, post)
+	}
+}

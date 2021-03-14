@@ -109,3 +109,37 @@ func (m *PostModel) GetByUserId(id string) (*[]models.Post, error) {
 	return &posts, nil
 
 }
+
+func (m *PostModel) Update(id, title, body string) (*models.Post, error) {
+	p := &models.Post{}
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		return nil, err
+	}
+	stmt := `
+	UPDATE posts
+	SET title = $2, body = $3
+	WHERE post_id = $1`
+	_, err = m.DB.Exec(stmt, uuid, title, body)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+	stmt = `
+	SELECT post_id, title, body, id 
+	FROM posts 
+	WHERE post_id = $1`
+	err = m.DB.QueryRow(stmt, uuid).Scan(&p.ID, &p.Title, &p.Body, &p.UserId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+
+	return p, nil
+}
