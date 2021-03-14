@@ -30,6 +30,7 @@ type application struct {
 		Insert(string, string, string) error
 		Get(string) (*models.User, error)
 		Update(string, string, string, string) (*models.User, error)
+		Delete(string) error
 	}
 }
 

@@ -71,3 +71,15 @@ func (app *application) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(b)
 }
+
+func (app *application) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["userID"]
+	err := app.users.Delete(id)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with deleting user."))
+		app.errorLog.Println(err)
+		return
+	}
+	w.Write([]byte("User deleted"))
+}

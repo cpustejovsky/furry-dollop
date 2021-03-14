@@ -13,6 +13,7 @@ func (app *application) Routes() *mux.Router {
 	s.HandleFunc("/user/{userID}", app.GetUser).Methods("GET")
 	s.HandleFunc("/user/new", app.AddUser).Methods("POST")
 	s.HandleFunc("/user/{userID}", app.UpdateUser).Methods("PATCH")
+	s.HandleFunc("/user/{userID}", app.DeleteUser).Methods("DELETE")
 	return r
 }
 
