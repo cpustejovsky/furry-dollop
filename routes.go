@@ -9,12 +9,13 @@ import (
 func (app *application) Routes() *mux.Router {
 	r := mux.NewRouter()
 	s := r.PathPrefix("/api").Subrouter()
-	s.HandleFunc("/", placeholderAPI)
+	s.HandleFunc("/", helloWorld)
 	s.HandleFunc("/user/{userID}", app.GetUser).Methods("GET")
 	s.HandleFunc("/user/new", app.AddUser).Methods("POST")
+	s.HandleFunc("/user/{userID}", app.UpdateUser).Methods("PATCH")
 	return r
 }
 
-func placeholderAPI(w http.ResponseWriter, r *http.Request) {
+func helloWorld(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello from the API"))
 }

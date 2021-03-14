@@ -27,8 +27,9 @@ type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
 	users    interface {
-		Get(string) (*models.User, error)
 		Insert(string, string, string) error
+		Get(string) (*models.User, error)
+		Update(string, string, string, string) (*models.User, error)
 	}
 }
 

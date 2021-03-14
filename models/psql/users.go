@@ -63,8 +63,8 @@ func (m *UserModel) Update(id, name, email, expertise string) (*models.User, err
 	}
 	stmt := `
 	UPDATE users
-	SET name = $2, email = $3, expertise = $4
-	WHERE account_id = $1`
+	SET username = $2, email = $3, expertise = $4
+	WHERE id = $1`
 	_, err = m.DB.Exec(stmt, uuid, name, email, expertise)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
