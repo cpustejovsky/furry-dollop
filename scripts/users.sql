@@ -3,6 +3,7 @@ CREATE TABLE users (
     username VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
     expertise VARCHAR NOT NULL,
+    hashed_password VARCHAR NOT NULL,
     PRIMARY KEY (id)
 );
 
