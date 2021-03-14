@@ -15,9 +15,14 @@ func (app *application) GetUser(w http.ResponseWriter, r *http.Request) {
 	u, err := app.users.Get(id)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-	} else {
-		w.Write([]byte(u.Name))
+		return
 	}
+	b, err := json.Marshal(u)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with updating user."))
+		app.errorLog.Println(err)
+	}
+	w.Write(b)
 }
 
 type FormUser struct {
@@ -82,4 +87,47 @@ func (app *application) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write([]byte("User deleted"))
+}
+
+//NOTE ROUTES
+
+func (app *application) GetPostsById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["postID"]
+	n, err := app.posts.GetById(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Something has gone wrong with fetching post."))
+		return
+	}
+	b, err := json.Marshal(n)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with fetching post."))
+		app.errorLog.Println(err)
+	}
+	w.Write(b)
+}
+
+type FormPost struct {
+	UserID string
+	Title  string
+	Body   string
+}
+
+func (app *application) AddPost(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var post FormPost
+	err := decoder.Decode(&post)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with adding post."))
+		app.errorLog.Println(err)
+		return
+	}
+	err = app.posts.Insert(post.UserID, post.Title, post.Body)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with adding post."))
+		app.errorLog.Println(err)
+		return
+	}
+	w.Write([]byte("Post added!"))
 }

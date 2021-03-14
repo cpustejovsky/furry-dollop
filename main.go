@@ -32,6 +32,10 @@ type application struct {
 		Update(string, string, string, string) (*models.User, error)
 		Delete(string) error
 	}
+	posts interface {
+		GetById(string) (*models.Post, error)
+		Insert(string, string, string) error
+	}
 }
 
 const (
@@ -74,6 +78,7 @@ func main() {
 
 	app := &application{
 		users: &psql.UserModel{DB: db},
+		posts: &psql.PostModel{DB: db},
 	}
 
 	server := &http.Server{

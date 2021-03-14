@@ -12,7 +12,7 @@ type PostModel struct {
 	DB *sql.DB
 }
 
-func (m *PostModel) Get(id string) (*models.Post, error) {
+func (m *PostModel) GetById(id string) (*models.Post, error) {
 	p := &models.Post{}
 	uuid, err := uuid.Parse(id)
 	if err != nil {
@@ -30,7 +30,6 @@ func (m *PostModel) Get(id string) (*models.Post, error) {
 			return nil, err
 		}
 	}
-
 	return p, nil
 }
 

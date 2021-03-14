@@ -26,7 +26,7 @@ func TestPostModelGet(t *testing.T) {
 
 	m := psql.PostModel{db}
 
-	user, err := m.Get(testhelper.TestPostUUIDString)
+	user, err := m.GetById(testhelper.TestPostUUIDString)
 
 	if err != nil {
 		t.Errorf("expected nil, instead got following error:\n%v", err)
