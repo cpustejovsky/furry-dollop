@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/cpustejovsky/furry-dollop/models"
@@ -50,14 +51,6 @@ type application struct {
 	}
 }
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	dbname   = "furrydollop"
-	password = "password"
-)
-
 func init() {
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.LUTC)
 	errorLog = log.New(os.Stderr, "ERROR\t", log.Ldate|log.LUTC|log.Llongfile)
@@ -74,19 +67,24 @@ func main() {
 	flag.Parse()
 
 	// Environemntal Variables
-	var password = os.Getenv("TEST_PSQL_PW")
+	dbport, err := strconv.Atoi(os.Getenv("PSQL_PORT"))
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+	var dbhost = os.Getenv("PSQL_HOST")
+	var dbuser = os.Getenv("PSQL_USER")
+	var dbname = os.Getenv("PSQL_DBNAME")
+	var dbpassword = os.Getenv("PSQL_password")
 	var sessionSecret = []byte(os.Getenv("SESSION_SECRET"))
 
 	// DB Setup
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", dbhost, dbport, dbuser, dbname, dbpassword)
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
-	err = db.Ping()
 	if err != nil {
 		panic(err)
 	}

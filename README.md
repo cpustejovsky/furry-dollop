@@ -1,4 +1,4 @@
-# Fuzzy Dollop
+# Fuzzy Dollop (GitHub auto-generated name)
 
 Test HTTP Application built with TDD start to finish
 
@@ -15,7 +15,47 @@ Test HTTP Application built with TDD start to finish
 * Use PostgreSQL
 * Deploy to Heroku
 
-## Data
+## Next Steps
+
+If I had more time, I'd:
+* containerize and deploy to Heroku. 
+* add more test cases for each unit test
+* add further unit tests for stuff outside db model methods
+* make error handling and error messages consistent
+* set up logging to also pipe to persistent file
+* determine the best way to make sure SQL `UPDATE`s do not overwrite data whether that would be by coordinating with the client-side or by making more use of SQL
+
+## Instructions
+
+To install dependencies, run:
+```bash
+go get
+```
+
+Set up a PostgreSQL with credentials that you can store in an `.env` file. Example `.env` file:
+
+```
+PSQL_HOST="localhost"
+PSQL_PORT=5432
+PSQL_USER="postgres"
+PSQL_DBNAME="furrydollop"
+PSQL_password="password"
+PSQL_PW="password"
+```
+
+You can run the SQL scripts located in `furry-dollop/scripts` to create the `posts` and `users` tables.
+
+To turn on the app, run:
+```bash
+go run .
+```
+
+To test model methods, run:
+```bash
+go run ./models/psql -v
+```
+
+## Sample Data
 
 ### Posts
 
