@@ -85,32 +85,31 @@ func (app *application) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 //TODO: bring back update functionality in a way that won't overwrite SQL data
-// func (app *application) UpdateUser(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id := vars["userID"]
-// 	decoder := json.NewDecoder(r.Body)
-// 	var user struct {
-// 		Name      string
-// 		Email     string
-// 		Expertise string
-// 	}
-// 	err := decoder.Decode(&user)
-// 	if err != nil {
-// 		w.Write([]byte("Something has gone wrong with updating user."))
-// 		app.errorLog.Println(err)
-// 	}
-// 	u, err := app.users.Update(id, user.Name, user.Email, user.Expertise)
-// 	if err != nil {
-// 		w.Write([]byte("Something has gone wrong with updating user."))
-// 		app.errorLog.Println(err)
-// 	}
-// 	b, err := json.Marshal(u)
-// 	if err != nil {
-// 		w.Write([]byte("Something has gone wrong with updating user."))
-// 		app.errorLog.Println(err)
-// 	}
-// 	w.Write(b)
-// }
+func (app *application) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["userID"]
+	decoder := json.NewDecoder(r.Body)
+	var user struct {
+		Name      string
+		Expertise string
+	}
+	err := decoder.Decode(&user)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with updating user."))
+		app.errorLog.Println(err)
+	}
+	u, err := app.users.Update(id, user.Name, user.Expertise)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with updating user."))
+		app.errorLog.Println(err)
+	}
+	b, err := json.Marshal(u)
+	if err != nil {
+		w.Write([]byte("Something has gone wrong with updating user."))
+		app.errorLog.Println(err)
+	}
+	w.Write(b)
+}
 
 func (app *application) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	uuid := app.session.GetString(r, "authenticatedUserID")

@@ -79,17 +79,18 @@ func (m *UserModel) Insert(name, email, expertise, password string) error {
 	return nil
 }
 
-func (m *UserModel) Update(id, name, email, expertise string) (*models.User, error) {
+func (m *UserModel) Update(id, name, expertise string) (*models.User, error) {
 	u := &models.User{}
 	uuid, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
 	}
 	stmt := `
-	UPDATE users
-	SET username = $2, email = $3, expertise = $4
+	UPDATE users SET
+		username = (CASE WHEN $2 <> '' OR $2 <> null THEN $2 ELSE username END),
+		expertise = (CASE WHEN $3 <> '' OR $3 <> null THEN $3 ELSE expertise END)
 	WHERE id = $1`
-	_, err = m.DB.Exec(stmt, uuid, name, email, expertise)
+	_, err = m.DB.Exec(stmt, uuid, name, expertise)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord

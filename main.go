@@ -38,7 +38,7 @@ type application struct {
 		Authenticate(string, string) (string, error)
 		Insert(string, string, string, string) error
 		Get(string) (*models.User, error)
-		Update(string, string, string, string) (*models.User, error)
+		Update(string, string, string) (*models.User, error)
 		Delete(string) error
 	}
 	posts interface {
@@ -74,11 +74,11 @@ func main() {
 	var dbhost = os.Getenv("PSQL_HOST")
 	var dbuser = os.Getenv("PSQL_USER")
 	var dbname = os.Getenv("PSQL_DBNAME")
-	var dbpassword = os.Getenv("PSQL_password")
+	var dbpassword = os.Getenv("PSQL_PW")
 	var sessionSecret = []byte(os.Getenv("SESSION_SECRET"))
 
 	// DB Setup
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", dbhost, dbport, dbuser, dbname, dbpassword)
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s  sslmode=disable", dbhost, dbport, dbuser, dbpassword, dbname)
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {

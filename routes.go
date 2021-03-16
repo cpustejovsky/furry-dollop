@@ -20,7 +20,7 @@ func (app *application) Routes() *mux.Router {
 	u := s.PathPrefix("/users").Subrouter()
 	u.HandleFunc("/{userID}", app.GetUser).Methods("GET")
 	u.HandleFunc("/new", app.AddUser).Methods("POST")
-	// u.HandleFunc("/{userID}", app.UpdateUser).Methods("PUT")
+	u.HandleFunc("/{userID}", app.UpdateUser).Methods("PUT")
 	u.HandleFunc("/delete", app.DeleteUser).Methods("DELETE")
 	u.Use(app.authenticate)
 
