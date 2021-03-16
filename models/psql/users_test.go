@@ -95,14 +95,14 @@ func TestUserModelUpdate(t *testing.T) {
 	db, mock := testhelper.NewMockDB(t)
 	rows := mock.NewRows([]string{"id", "username", "email", "expertise"}).AddRow(testUser.ID, testUser.Name, testUser.Email, testUser.Expertise)
 	mock.ExpectExec(regexp.QuoteMeta("UPDATE users")).
-		WithArgs(testUser.ID, testUser.Name, testUser.Email, testUser.Expertise).
+		WithArgs(testUser.ID, testUser.Name, testUser.Expertise).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT id, username, email, expertise FROM users WHERE id = $1")).
 		WithArgs(testhelper.TestUserUUID()).
 		WillReturnRows(rows)
 	m := psql.UserModel{db}
 
-	user, err := m.Update(testhelper.TestUserUUIDString, testUser.Name, testUser.Email, testUser.Expertise)
+	user, err := m.Update(testhelper.TestUserUUIDString, testUser.Name, testUser.Expertise)
 	if err != nil {
 		t.Errorf("expected nil, instead got following error:\n%v", err)
 	}
