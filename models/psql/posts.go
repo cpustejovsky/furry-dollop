@@ -117,8 +117,9 @@ func (m *PostModel) Update(id, title, body string) (*models.Post, error) {
 		return nil, err
 	}
 	stmt := `
-	UPDATE posts
-	SET title = $2, body = $3
+	UPDATE posts SET
+		title = (CASE WHEN $2 <> '' OR $2 <> null THEN $2 ELSE title END),
+		body = (CASE WHEN $3 <> '' OR $3 <> null THEN $3 ELSE body END)
 	WHERE post_id = $1`
 	_, err = m.DB.Exec(stmt, uuid, title, body)
 	if err != nil {
